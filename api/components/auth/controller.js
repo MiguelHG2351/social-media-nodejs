@@ -5,22 +5,21 @@ const TABLA = 'auth'
 module.exports = function (injectedStore) {
     let store = injectedStore
     if(!store) {
-        store = require('../../../store/dummy')
+        store = require('../../../store/mysql')
     }
 
     async function login(username, password) {
-        const data = await store.query(TABLA, {username})
-
+        const data = await store.query(TABLA, { username })
+        console.log(username)
         return bcrypt.compare(password, data.password)
         .then(isEqual => {
             if(isEqual === true) {
                 // token
                 return auth.sign(data)
             }  else {
-                throw new Error('Ahh sos re trol')
+                throw new Error('No se puede iniciar sesión')
             }
         })
-        // return data;
     }
 
     async function upsert(data) {
@@ -33,7 +32,7 @@ module.exports = function (injectedStore) {
         if(data.password) {
             authData.password = await bcrypt.hash(data.password, 5)
         }
-        return store.upsert(TABLA, authData)
+        return store.upsert(TABLA, authData, data.isNew)
     }
 
     return {

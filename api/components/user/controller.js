@@ -6,11 +6,18 @@ const TABLA = 'user'
 module.exports = function (injectedStore) {
     let store = injectedStore
     if(!store) {
-        store = require('../../../store/dummy')
+        store = require('../../../store/mysql')
     }
     
     function list() {
         return store.list(TABLA)
+    }
+    
+    function follow(from, to) {
+        return store.upsert(TABLA + '_follow', {
+            user_from: from,
+            user_to: to
+        }, true)
     }
 
     function get(id) {
@@ -33,16 +40,17 @@ module.exports = function (injectedStore) {
                 id: user.id,
                 username: user.username,
                 password: body.password,
+                isNew: body.isNew
             })
         }
-        console.log('xd')
-        console.log(body.password)
-        return store.upsert(TABLA, user)
+        return store.upsert(TABLA, user, body.isNew)
     }
+
 
     return {
         list,
         get,
-        post
+        post,
+        follow
     }
 }
