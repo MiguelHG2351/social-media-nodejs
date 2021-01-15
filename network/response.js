@@ -14,7 +14,7 @@ exports.error = function (req, res, msg, status) {
     let stautsMessage = msg || ''
 
     res.status(status).send({
-        error: false,
+        error: true,
         status: stautsCode,
         body: stautsMessage
     })
