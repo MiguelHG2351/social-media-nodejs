@@ -1,38 +1,31 @@
 const express = require('express')
 
 const response = require('../network/response')
-const store = require('../store/mysql')
+const store = require('../store/redis')
 
 const router = express.Router()
 
 router.get('/:table', list)
 router.get('/:table/:id', get)
-router.post('/:table', insert)
 router.put('/:table', upsert)
-router.put('/:table/query', query)
 
 async function list(req, res, next) {
     const datos = await store.list(req.params.table)
     response.success(req, res, datos, 200)
 }
 
-async function get() {
+async function get(req, res, next) {
     const datos = await store.get(req.params.table, req.params.table)
     response.success(req, res, datos, 200)
 }
 
-async function insert() {
+async function insert(req, res, next) {
     const datos = await store.upsert(req.params.table, req.body, true)
     response.success(req, res, datos, 200)
 }
 
-async function upsert() {
-    const datos = await store.upsert(req.params.table, false)
-    response.success(req, res, datos, 200)
-}
-
-async function query(req, res, next) {
-    const datos = await store.query(req.params.table, req.body.query, req.body.join)
+async function upsert(req, res, next) {
+    const datos = await store.upsert(req.params.table, req.body, true)
     response.success(req, res, datos, 200)
 }
 
